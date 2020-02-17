@@ -13,7 +13,7 @@ LOG = logging.getLogger('db')
 class NessusSqlConnector(object):
     def __init__(
             self,
-            connection_string='mysql+pymysql://root:root@localhost:32000/vulcan'
+            connection_string=gk_nessus.base.connection_string
     ):
         self._connection = None
 
@@ -62,8 +62,8 @@ class NessusSqlConnector(object):
                 ))
             plugin = gk_nessus.plugin.Plugin(
                 id=int(source['pluginID']),
-                modified=source['modified'],
-                published=source['published'],
+                modified=datetime.datetime.fromisoformat(source['modified']),
+                published=datetime.datetime.fromisoformat(source['published']),
                 score_value=float(score_value),
                 title=source['title'],
                 cve_list=cve_list
@@ -88,7 +88,7 @@ class NessusSqlConnector(object):
         try:
             # a plugin the the same id already exists in the DB
             if existing_plugin is not None:
-                if existing_plugin.modified < datetime.datetime.fromisoformat(plugin.modified):
+                if existing_plugin.modified < plugin.modified:
                     # the existing plugin id is out-of-date - delete it (with matching CVEs)
                     self._session.delete(existing_plugin)
                 else:
