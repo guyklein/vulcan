@@ -70,13 +70,24 @@ class NessusUpdater:
             LOG.error(f'failed to open connection to DB')
             return
         entries = [entry for entry in json_content]
-        for entry in entries:
+        LOG.info('started updating DB')
+        # for entry in entries:
+        for x in range(len(entries)):
+            entry = entries[x]
             try:
                 self._ns_sqlcon.update_plugins_table(entry['_source'])
             except AttributeError:
                 LOG.exception(f'malformed entry: {entry}')
+            if x % 2000 != 0:
+                continue
+            LOG.info(f'Updated {x} records')
+
         try:
+            LOG.info('Commit started')
             self._ns_sqlcon.session.commit()
+            LOG.info('Commit finished')
         except sqlalchemy.exc.IntegrityError:
             LOG.exception('failed committing updates to DB')
             self._ns_sqlcon.session.rollback()
+
+        LOG.info('Finished updating DB')

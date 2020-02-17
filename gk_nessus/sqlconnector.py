@@ -152,10 +152,7 @@ class NessusSqlConnector(object):
 
     def clear_db(self):
 
-        # gk_nessus.base.Base.metadata.drop_all(bind=self._engine)
-        gk_nessus.base.Base.metadata.drop(bind=self._engine)
-        self.session.query(gk_nessus.cve.CVE).delete()
-        self.session.query(gk_nessus.cve.CVE).delete()
-        self.session.query(gk_nessus.plugin.Plugin).delete()
+        LOG.info('Clearing database')
+        gk_nessus.base.Base.metadata.drop_all(bind=self._engine)
         self._session.commit()
 

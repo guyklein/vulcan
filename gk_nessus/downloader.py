@@ -63,7 +63,7 @@ class NessusDownloader(object):
         url = f'{self._url}&apiKey={self._api_key}'
         request = urllib.request.Request(url, headers=headers)
         try:
-            LOG.debug(f'opening {url}')
+            LOG.info(f'opening {url}')
             with urllib.request.urlopen(request) as response:
                 code = response.getcode()
                 if code < 200 or code >= 300:
@@ -76,11 +76,11 @@ class NessusDownloader(object):
                 disposition = info.get('Content-Disposition')
                 m = re.search('filename=(.*)', disposition)
                 start_time = datetime.datetime.now()
-                LOG.debug(f'started getting data from {url}')
+                LOG.info(f'started getting data from {url}')
                 file_data = response.read()
                 end_time = datetime.datetime.now()
                 time_span = str(end_time - start_time)
-                LOG.debug(f'finished getting data - operations took {time_span}')
+                LOG.info(f'finished getting data - operations took {time_span}')
                 return m.group(0), file_data
         except urllib.error.URLError:
             LOG.exception(f'Failed to fetch {self._url}')
