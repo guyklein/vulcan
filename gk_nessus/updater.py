@@ -1,11 +1,9 @@
-import threading
 import io
 import json
 import logging
 
 import sqlalchemy
 import zipfile
-
 
 from gk_nessus import downloader, consts
 
@@ -71,8 +69,8 @@ class NessusUpdater:
             return
         entries = [entry for entry in json_content]
         LOG.info('started updating DB')
-        # for entry in entries:
-        for x in range(len(entries)):
+        num_of_entries = len(entries)
+        for x in range(num_of_entries):
             entry = entries[x]
             try:
                 self._ns_sqlcon.update_plugins_table(entry['_source'])
@@ -82,6 +80,7 @@ class NessusUpdater:
                 continue
             LOG.info(f'Updated {x} records')
 
+        LOG.info(f'Updated {num_of_entries} records')
         try:
             LOG.info('Commit started')
             self._ns_sqlcon.session.commit()

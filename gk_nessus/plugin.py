@@ -29,7 +29,12 @@ class Plugin(Base):
     score_value = Column(Float, nullable=False)
     title = Column(String(1000), nullable=False)
 
-    cve_list = relationship("CVE", secondary='association', cascade="all, delete, save-update", lazy='joined')
+    cve_list = relationship(
+        "CVE",
+        secondary='association',
+        cascade="all, delete, save-update",
+        lazy='joined'
+    )
 
     def __repr__(self):
         return "<Plugin(" \

@@ -10,7 +10,11 @@ class CVE(Base):
     cve = Column(String(255), nullable=False)
 
     def __repr__(self):
-        return "<CVE(id='%s', str_id='%s', cve='%s')>" % (self.id, self.str_id, self.cve)
+        return "<CVE(id='%s', str_id='%s', cve='%s')>" % (
+            self.id,
+            self.str_id,
+            self.cve
+        )
 
     def serialize(self):
         """Return object data in easily serializable format"""
@@ -19,4 +23,3 @@ class CVE(Base):
             'str_id': self.str_id,
             'cve': self.cve,
         }
-

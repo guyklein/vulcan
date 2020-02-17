@@ -23,7 +23,7 @@ class NessusSqlConnector(object):
         self._engine = db.create_engine(self._connection_string)
         gk_nessus.base.Session.configure(bind=self._engine)
         self._session = gk_nessus.base.Session()
-        sleep_time=15
+        sleep_time = 15
         for x in range(5):
             try:
                 self._connection = self._engine.connect()
@@ -33,7 +33,9 @@ class NessusSqlConnector(object):
                     LOG.error('failed to connect to DB. Giving up...')
                     return
                 else:
-                    LOG.error(f'Attempt #{x+1} to connect to DB failed, trying again in {sleep_time} seconds')
+                    LOG.error(
+                        f'Attempt #{x + 1} to connect to DB failed, '
+                        f'trying again in {sleep_time} seconds')
                     time.sleep(sleep_time)
         self.clear_db()
         gk_nessus.base.Base.metadata.create_all(self._engine)
@@ -99,8 +101,8 @@ class NessusSqlConnector(object):
                     return
             # Add the CVEs of that plugin
             for cve in cve_list:
-                existing_cve = None # self._session.query(
-                    # gk_nessus.cve.CVE).filter(gk_nessus.cve.CVE.id == cve.id).first()
+                existing_cve = None  # self._session.query(
+                # gk_nessus.cve.CVE).filter(gk_nessus.cve.CVE.id == cve.id).first()
                 if existing_cve is None:
                     self._session.add(cve)
 
@@ -152,11 +154,11 @@ class NessusSqlConnector(object):
         :return: all affected plugins
         """
         return self._session.query(gk_nessus.plugin.Plugin).join(
-            gk_nessus.cve.CVE, gk_nessus.plugin.Plugin.cve_list).filter(gk_nessus.cve.CVE.cve.in_(cve_ids))
+            gk_nessus.cve.CVE, gk_nessus.plugin.Plugin.cve_list).filter(
+            gk_nessus.cve.CVE.cve.in_(cve_ids))
 
     def clear_db(self):
 
         LOG.info('Clearing database')
         gk_nessus.base.Base.metadata.drop_all(bind=self._engine)
         self._session.commit()
-

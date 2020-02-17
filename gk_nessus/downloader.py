@@ -98,11 +98,13 @@ class NessusDownloader(object):
 
         for attempt in range(self._max_retries):
             file_name, file_data = self._download()
-            if path := _dest_dir+'/'+file_name:
+            if path := _dest_dir + '/' + file_name:
                 return path, file_data
-            LOG.debug(f'Attempt #{attempt} to download the file failed, trying again in {attempt*2} seconds')
-            time.sleep(attempt*2)
+            LOG.debug(
+                f'Attempt #{attempt} to download the file failed,'
+                f' trying again in {attempt * 2} seconds'
+            )
+            time.sleep(attempt * 2)
 
         LOG.debug(f'{self._max_retries} tries exceeded, giving up')
         return None, None
-
