@@ -12,18 +12,17 @@ from gk_nessus import downloader, consts
 LOG = logging.getLogger(__name__)
 
 
-class NessusUpdater(threading.Thread):
+class NessusUpdater:
     def __init__(self, ns_sqlcon):
         super(NessusUpdater, self).__init__()
         self._ns_sqlcon = ns_sqlcon
 
     def run(self):
         # TODO: Should run indefinitely
-        self._update_db()
-
-    def _update_db(self):
         stream = self._get_nessus_file()
+        self._update_db(stream)
 
+    def _update_db(self, stream):
         zipped_file = zipfile.ZipFile(stream)
         if bad_file := zipped_file.testzip():
             LOG.error(f'corrupt file in zip: {bad_file}')

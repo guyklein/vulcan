@@ -11,9 +11,7 @@ ns_sqlcon = sqlconnector.NessusSqlConnector()
 
 
 def main():
-    update_thread = updater.NessusUpdater(sqlconnector.NessusSqlConnector())
-    update_thread.daemon = True
-    update_thread.start()
+    updater.NessusUpdater(ns_sqlcon).run()
     run(host='localhost', port=5000)
 
 
@@ -30,8 +28,7 @@ def get_all_plugins():
         length = results.count()
         LOG.debug(f'Request to get all the plugins was submitted. Result len is {length}')
         response.content_type = 'application/json'
-        response.body = json.dumps([r.serialize for r in results.all()])
-        return response
+        return json.dumps([r.serialize() for r in results.all()])
     except Exception:
         # FIXME: use specific exceptions
         response.status_code = 500
@@ -66,5 +63,5 @@ def get_plugins_by_cve_ids():
 
 
 if __name__ == '__main__':
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(message)s')
     main()
