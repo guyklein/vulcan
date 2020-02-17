@@ -1,6 +1,7 @@
 import datetime
 import logging
 import sqlalchemy as db
+from sqlalchemy.orm import joinedload
 import time
 
 import gk_nessus.base
@@ -26,6 +27,7 @@ class NessusSqlConnector(object):
         for x in range(5):
             try:
                 self._connection = self._engine.connect()
+                break
             except db.exc.OperationalError:
                 if x == 5:
                     LOG.error('failed to connect to DB. Giving up...')
@@ -33,6 +35,7 @@ class NessusSqlConnector(object):
                 else:
                     LOG.error(f'Attempt #{x+1} to connect to DB failed, trying again in {sleep_time} seconds')
                     time.sleep(sleep_time)
+        self.clear_db()
         gk_nessus.base.Base.metadata.create_all(self._engine)
 
         LOG.info(f'Successfully connected to {self._connection_string}')
@@ -84,7 +87,7 @@ class NessusSqlConnector(object):
             return
         # if the DB already contains such an entry and the modified date is the same - no need to update.
         # First - search for the entry in the DB
-        existing_plugin = self.get_plugin_data(plugin.id).first()
+        existing_plugin = None  # self.get_plugin_data(plugin.id).first()
         try:
             # a plugin the the same id already exists in the DB
             if existing_plugin is not None:
@@ -96,8 +99,8 @@ class NessusSqlConnector(object):
                     return
             # Add the CVEs of that plugin
             for cve in cve_list:
-                existing_cve = self._session.query(
-                    gk_nessus.cve.CVE).filter(gk_nessus.cve.CVE.id == cve.id).first()
+                existing_cve = None # self._session.query(
+                    # gk_nessus.cve.CVE).filter(gk_nessus.cve.CVE.id == cve.id).first()
                 if existing_cve is None:
                     self._session.add(cve)
 
@@ -130,7 +133,8 @@ class NessusSqlConnector(object):
             else:
                 sort_order_list.append(gk_nessus.plugin.Plugin.score_value.asc())
 
-        return self._session.query(gk_nessus.plugin.Plugin).order_by(*sort_order_list)
+        return self._session.query(gk_nessus.plugin.Plugin).options(
+            joinedload('cve_list')).order_by(*sort_order_list)
 
     def get_plugin_data(self, plugin_id):
         """

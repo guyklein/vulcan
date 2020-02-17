@@ -29,7 +29,7 @@ class Plugin(Base):
     score_value = Column(Float, nullable=False)
     title = Column(String(1000), nullable=False)
 
-    cve_list = relationship("CVE", secondary='association', cascade="all, delete, save-update")
+    cve_list = relationship("CVE", secondary='association', cascade="all, delete, save-update", lazy='joined')
 
     def __repr__(self):
         return "<Plugin(" \
@@ -46,7 +46,6 @@ class Plugin(Base):
                    self.title,
                    self.cve_list)
 
-    @property
     def serialize(self):
         """Return object data in easily serializable format"""
         return {
@@ -55,5 +54,5 @@ class Plugin(Base):
             'published': alchemy_encoder(self.published),
             'score': self.score_value,
             'title': self.title,
-            'cvelist': [cve.serialize for cve in self.cve_list],
+            'cvelist': [cve.serialize() for cve in self.cve_list],
         }

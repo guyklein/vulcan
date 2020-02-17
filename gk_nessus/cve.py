@@ -12,7 +12,6 @@ class CVE(Base):
     def __repr__(self):
         return "<CVE(id='%s', str_id='%s', cve='%s')>" % (self.id, self.str_id, self.cve)
 
-    @property
     def serialize(self):
         """Return object data in easily serializable format"""
         return {
