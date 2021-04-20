@@ -19,7 +19,7 @@ mysql-connector==2.2.9
 mysqlclient==1.4.6
 packaging==20.1
 pluggy==0.13.1
-py==1.8.1
+py==1.10.0
 pylint==2.4.4
 PyMySQL==0.9.3
 pyparsing==2.4.6
